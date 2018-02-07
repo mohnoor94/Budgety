@@ -74,7 +74,7 @@ var budgetController = (function () {
             // Calculate the budget: income - expenses
             data.budget = data.totals.inc - data.totals.exp;
 
-            // calculate the percenatge of income that we spent
+            // calculate the percentage of income that we spent
             if (data.totals.inc > 0) data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
             else data.percentage = -1;
         },
@@ -95,14 +95,9 @@ var budgetController = (function () {
         },
 
         getPercentages: function () {
-            var allPercentages = data.allItems.exp.map(function (current) {
+            return data.allItems.exp.map(function (current) {
                 return current.getPercentage();
             });
-            return allPercentages;
-        },
-
-        testing: function () {
-            console.log(data);
         }
     };
 })();
@@ -129,23 +124,19 @@ var UIController = (function () {
 
     var formatNumber = function (type, number) {
         var numberSplit, int, dec;
-        number = number.toFixed(2);
+        number = Math.abs(number).toFixed(2);
 
         numberSplit = number.split('.');
         int = numberSplit[0];
         dec = numberSplit[1];
 
-        if (int.length > 3) {
-            int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, int.length);
-        }
+        if (int.length > 3) int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, int.length);
 
         return ((type === 'inc') ? '+' : '-') + ' ' + int + '.' + dec;
     };
 
     var nodeListForEach = function (list, callback) {
-        for (var i = 0; i < list.length; i++) {
-            callback(list[i], i);
-        }
+        for (var i = 0; i < list.length; i++) callback(list[i], i);
     };
 
     // Public methods
@@ -187,7 +178,7 @@ var UIController = (function () {
         clearFields: function () {
             var fields = document.querySelectorAll(domStrings.inputDescription + ', ' + domStrings.inputValue);
             var fieldsArray = Array.prototype.slice.call(fields); // Convert list to array
-            fieldsArray.forEach(function (current, index, array) {
+            fieldsArray.forEach(function (current) {
                 current.value = '';
             });
 
@@ -228,22 +219,22 @@ var UIController = (function () {
                 domStrings.inputDescription + ', ' +
                 domStrings.inputValue
             );
-            
-            nodeListForEach(fields, function(current){
+
+            nodeListForEach(fields, function (current) {
                 current.classList.toggle('red-focus');
-            })
-            
+            });
+
             document.querySelector(domStrings.inputBtn).classList.toggle('red');
         },
 
         getDomStrings: function () {
             return domStrings;
-        },
+        }
     };
 })();
 
 
-// Global App Controlller - C: controller
+// Global App Controller - C: controller
 var controller = (function (budgetCtrl, UICtrl) {
     var DOM = UICtrl.getDomStrings();
 
@@ -342,5 +333,5 @@ var controller = (function (budgetCtrl, UICtrl) {
     };
 })(budgetController, UIController);
 
-// Start Applictaion
+// Start Application
 controller.init();
